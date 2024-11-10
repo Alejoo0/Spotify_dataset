@@ -1,7 +1,7 @@
 import pandas as pd
 import numpy as np
 
-archivo   = 'Spotify_Most_Streamed_Songs_Graficar.csv'
+archivo   = 'Spotify_dataset/Spotify_Most_Streamed_Songs_Graficar.csv'
 dataframe = pd.read_csv(archivo, encoding='latin-1', delimiter=',')
 
 # Convertir 'key' y 'mode' a tipo categórico
@@ -54,7 +54,7 @@ plt.show()
 
 """
 # DENSIDAD SPOTIFY PLAYLIST
-
+""""
 plt.figure(figsize=(16, 6))
 sns.histplot(dataframe['in_spotify_playlists'], bins=260, palette="flare")
 plt.title('Distribución de canciones en playlist')
@@ -64,7 +64,7 @@ plt.grid(axis='y', alpha=0.75)
 plt.xlim(left=dataframe['in_spotify_playlists'].min())
 plt.xticks(range(0, 55001, 2500))
 plt.show()
-
+"""
 
 # BARRAS APILADAS MODE Y KEYS
 """
@@ -129,14 +129,60 @@ plt.show()
 #MATRIZ DE CORRELACION
 """"
 # Seleccionar solo las columnas numéricas para la matriz de correlación
-numerical_df = dataframe.select_dtypes(include=['float64', 'int64'])
+numerical_dataframe = dataframe.select_dtypes(include=['float64', 'int64'])
 
 # Calcular la matriz de correlación
-correlation_matrix = numerical_df.corr()
+correlation_matrix = numerical_dataframe.corr()
 
 # Crear un mapa de calor para visualizar la matriz de correlación
 plt.figure(figsize=(12, 8))
 sns.heatmap(correlation_matrix, annot=True, cmap='coolwarm', fmt=".2f", linewidths=0.5)
 plt.title('Matriz de Correlación de Variables Numéricas')
+plt.show()
+"""
+
+#CODO PARA SACAR NUMERO DE K PARA K-MEANS
+""""
+from sklearn.cluster import KMeans
+from sklearn.preprocessing import StandardScaler
+from sklearn.decomposition import PCA
+import matplotlib.pyplot as plt
+import seaborn as sns
+
+# Selección de las columnas relevantes para el clustering
+features = [
+    'artist_count','released_year','in_spotify_playlists','bpm', 'danceability_%', 'energy_%', 'valence_%', 'acousticness_%',
+    'instrumentalness_%', 'liveness_%', 'speechiness_%', 'streams'
+]
+X = dataframe[features]
+
+# Estandarización de las características
+scaler = StandardScaler()
+X_scaled = scaler.fit_transform(X)
+
+# Método del Codo para determinar el número óptimo de clusters
+inertia = []
+K = range(1, 24)
+for k in K:
+    kmeans = KMeans(n_clusters=k, random_state=0)
+    kmeans.fit(X_scaled)
+    inertia.append(kmeans.inertia_)
+
+
+
+import matplotlib.pyplot as plt
+from sklearn.decomposition import PCA
+
+# Reducción de dimensionalidad con PCA
+pca = PCA(n_components=2)
+X_pca = pca.fit_transform(X_scaled)
+
+# Crear gráfico de dispersión de los clusters
+plt.figure(figsize=(10, 6))
+plt.scatter(X_pca[:, 0], X_pca[:, 1], c=kmeans.labels_, cmap='viridis', marker='o', edgecolor='k')
+plt.xlabel('PCA Componente 1')
+plt.ylabel('PCA Componente 2')
+plt.title('Visualización de Clusters con PCA')
+plt.colorbar(label='Cluster')
 plt.show()
 """
