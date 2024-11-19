@@ -1,12 +1,12 @@
 import pandas as pd
 import numpy as np
 
-archivo   = 'Spotify Most Streamed Songs.csv'
+archivo   = 'Spotify_dataset/Spotify Most Streamed Songs.csv'
 dataframe = pd.read_csv(archivo, encoding='latin-1', delimiter=',')
 
 # Eliminar Columnas(Son otras plataformas)
 columnas_eliminar = ['in_apple_playlists','in_apple_charts','in_deezer_playlists','in_deezer_charts',
-                     'in_shazam_charts','track_name','cover_url','track_name']
+                     'in_shazam_charts']
 dataframe = dataframe.drop(columns=columnas_eliminar)
 
 # Eliminar la fila número 574 (Contiene error en columna streams)
@@ -47,7 +47,5 @@ dataframe['mode'] = dataframe['mode'].astype('category')
 dataframe = dataframe[dataframe['streams'] <= 3500000000]
 
 # Guardar el DataFrame en un nuevo archivo CSV
-nuevo_archivo = 'Spotify_Most_Streamed_Songs_WEKA.csv'
-#dataframe.to_csv(nuevo_archivo, index=False, encoding='latin-1')
-
-dataframe.info()
+nuevo_archivo = 'Spotify_dataset/Spotify_Most_Streamed_Songs_ANALISIS.csv'
+dataframe.to_csv(nuevo_archivo, index=False, encoding='latin-1')
